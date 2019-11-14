@@ -69,9 +69,15 @@ public class DataBaseController {
                 stmt = conn.createStatement();
                 stmt.execute(sql);
 
+                this.insertClient(new Client("jose", "jose", "jose", "jose", 1999, false, "", 0));
+                this.insertClient(new Client("luis", "luis", "luis", "luis", 2001, false, "", 0));
+                this.insertClient(new Client("joao", "joao", "joao", "joao", 2000, false, "", 0));
+                this.insertClient(new Client("sony", "sony", "sony", "sony", 2003, false, "", 0));
+                this.insertClient(new Client("play", "play", "play", "play", 2002, false, "", 0));
+
                 System.out.println("Data-base initialized");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -79,6 +85,10 @@ public class DataBaseController {
     }
 
     public boolean insertClient(Client client) {
+        if (client.getNick()== null || client.getPass()== null) {
+            return false;
+        }
+        
         String sql = "INSERT INTO CLIENT(nick,email,pass,birth,online,path,port) VALUES(?,?,?,?,?,?,?)";
 
         try {
@@ -91,7 +101,7 @@ public class DataBaseController {
             pstmt.setString(6, client.getPath());
             pstmt.setInt(7, client.getPort());
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -99,6 +109,10 @@ public class DataBaseController {
     }
 
     public boolean updateClient(Client client) {
+        if (client.getId() == null) {
+            return false;
+        }
+
         String sql = "UPDATE CLIENT "
                 + "      SET nick      = ?,"
                 + "          email     = ?,"
@@ -121,7 +135,7 @@ public class DataBaseController {
             pstmt.setString(7, client.getPath());
             pstmt.setInt(8, client.getPort());
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -131,7 +145,7 @@ public class DataBaseController {
     public Client searchClient(Client client) {
         String sql = "SELECT * "
                 + "     FROM CLIENT "
-                + "    WHERE nick = '" + client.getNick()+"'"
+                + "    WHERE nick = '" + client.getNick() + "'"
                 + "      AND pass = '" + client.getPass() + "'";
 
         try {
@@ -142,13 +156,17 @@ public class DataBaseController {
                 return getClientFromResultSet(rs);
             }
             return null;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
 
     public boolean insertRelationClients(Client client01, Client client02) {
+        if (client01.getId() == null || client02.getId() == null) {
+            return false;
+        }
+        
         String sql = "INSERT INTO ClientRel(client1,client2) VALUES(?,?)";
 
         try {
@@ -160,7 +178,7 @@ public class DataBaseController {
             pstmt.setInt(1, client02.getId());
             pstmt.setInt(2, client01.getId());
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -168,6 +186,10 @@ public class DataBaseController {
     }
 
     public boolean removeRelationClients(Client client01, Client client02) {
+        if (client01.getId() == null || client02.getId() == null) {
+            return false;
+        }
+        
         String sql = "DELETE FROM ClientRel WHERE client1 = ? AND client2 = ?";
 
         try {
@@ -179,7 +201,7 @@ public class DataBaseController {
             pstmt.setInt(1, client02.getId());
             pstmt.setInt(2, client01.getId());
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return false;
         }
@@ -187,6 +209,10 @@ public class DataBaseController {
     }
 
     public ArrayList<Client> listRelationClients(Client client) {
+        if (client.getId() == null) {
+            return null;
+        }
+        
         ArrayList clients = new ArrayList();
         String sql = "SELECT * "
                 + "     FROM CLIENT "
@@ -204,13 +230,17 @@ public class DataBaseController {
                 clients.add(getClientFromResultSet(rs));
             }
             return clients;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
     }
 
     public ArrayList<Client> listAvaliableRelationClients(Client client) {
+        if (client.getId() == null) {
+            return null;
+        }
+        
         ArrayList clients = new ArrayList();
         String sql = "SELECT * "
                 + "     FROM CLIENT "
@@ -228,7 +258,7 @@ public class DataBaseController {
                 clients.add(getClientFromResultSet(rs));
             }
             return clients;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
@@ -248,7 +278,7 @@ public class DataBaseController {
         return c;
     }
 
-    public void printAllClients(){
+    public void printAllClients() {
         try {
             String sql = "SELECT * FROM CLIENT ";
             Statement stmt = conn.createStatement();
@@ -263,7 +293,7 @@ public class DataBaseController {
             while (rs.next()) {
                 System.out.println("client1: " + rs.getInt("client1") + " - " + "client2: " + rs.getInt("client2"));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
