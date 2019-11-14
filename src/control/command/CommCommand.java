@@ -83,13 +83,27 @@ public abstract class CommCommand {
         if (json.has(CommandStatementName.CMM_ID.getName())) {
             client.setId(json.getInt(CommandStatementName.CMM_ID.getName()));
         }
-        client.setNick(json.getString(CommandStatementName.CMM_NICK.getName()));
-        client.setPass(json.getString(CommandStatementName.CMM_PASS.getName()));
-        client.setBirth(json.getInt(CommandStatementName.CMM_BIRTH.getName()));
-        client.setEmail(json.getString(CommandStatementName.CMM_EMAIL.getName()));
-        client.setOnline(json.getBoolean(CommandStatementName.CMM_ONLINE.getName()));
-        client.setPath(json.getString(CommandStatementName.CMM_PATH.getName()));
-        client.setPort(json.getInt(CommandStatementName.CMM_PORT.getName()));
+        if (json.has(CommandStatementName.CMM_NICK.getName())) {
+            client.setNick(json.getString(CommandStatementName.CMM_NICK.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_PASS.getName())) {
+            client.setPass(json.getString(CommandStatementName.CMM_PASS.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_BIRTH.getName())) {
+            client.setBirth(json.getInt(CommandStatementName.CMM_BIRTH.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_EMAIL.getName())) {
+            client.setEmail(json.getString(CommandStatementName.CMM_EMAIL.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_ONLINE.getName())) {
+            client.setOnline(json.getBoolean(CommandStatementName.CMM_ONLINE.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_PATH.getName())) {
+            client.setPath(json.getString(CommandStatementName.CMM_PATH.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_PORT.getName())) {
+            client.setPort(json.getInt(CommandStatementName.CMM_PORT.getName()));
+        }
         return client;
     }
 

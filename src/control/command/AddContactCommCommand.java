@@ -1,7 +1,6 @@
 package control.command;
 
 import control.DataBaseController;
-import static control.command.CommCommand.getClientFromJSON;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
