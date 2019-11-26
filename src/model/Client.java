@@ -13,6 +13,7 @@ public class Client {
     private String pass;
     private int birth;
     private boolean online;
+    private String last_log;
     private String path;
     private int port;
 
@@ -29,7 +30,7 @@ public class Client {
         this.path = path;
         this.port = port;
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -86,6 +87,14 @@ public class Client {
         this.online = online;
     }
 
+    public String getLast_log() {
+        return last_log;
+    }
+
+    public void setLast_log(String last_log) {
+        this.last_log = last_log;
+    }
+    
     public String getPath() {
         return path;
     }
@@ -104,7 +113,7 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Client{" + "id=" + id + ", nick=" + nick + ", email=" + email + ", oldemail=" + oldemail + ", pass=" + pass + ", birth=" + birth + ", online=" + online + ", path=" + path + ", port=" + port + '}';
+        return "Client{" + "id=" + id + ", nick=" + nick + ", email=" + email + ", oldemail=" + oldemail + ", pass=" + pass + ", birth=" + birth + ", online=" + online + ", last_log=" + last_log + ", path=" + path + ", port=" + port + '}';
     }
-    
+
 }

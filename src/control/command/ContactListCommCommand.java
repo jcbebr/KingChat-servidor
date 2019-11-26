@@ -23,6 +23,8 @@ public class ContactListCommCommand extends CommCommand {
     @Override
     public void execute() {
         Client client = getClientFromJSON(json);
+        
+        DataBaseController.getInstance().keepAlive(client);
 
         List<Client> clients = new ArrayList<>();
         if (json.has(CommandStatementName.CMM_CLIENT_LIST_AVALIABLE.getName())) {
@@ -32,7 +34,7 @@ public class ContactListCommCommand extends CommCommand {
                 clients = DataBaseController.getInstance().listRelationClients(client);
             }
         }
-
+        
         JSONObject json = new JSONObject();
         json.put(CommandStatementName.CMM_TYPE.getName(), CommandStatementValue.CONTACTLIST_STATUS.ordinal());
         JSONArray optJSONArray = new JSONArray(clients);

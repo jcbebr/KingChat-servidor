@@ -11,15 +11,17 @@ import java.util.Properties;
  */
 public class Defs {
 
-    private int port;
     private static Defs instance;
+    private int server_port;
+    private int rf_interval;
 
     public Defs() {
         try (InputStream input = new FileInputStream("./defs.properties")) {
             Properties prop = new Properties();
             prop.load(input);
 
-            this.port = Integer.parseInt(prop.getProperty("port"));
+            this.server_port = Integer.parseInt(prop.getProperty("server_port"));
+            this.rf_interval = Integer.parseInt(prop.getProperty("rf_interval"));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -32,8 +34,12 @@ public class Defs {
         return instance;
     }
 
-    public int getPort() {
-        return port;
+    public int getServer_port() {
+        return server_port;
+    }
+
+    public int getRf_interval() {
+        return rf_interval;
     }
 
 }

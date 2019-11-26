@@ -19,8 +19,9 @@ public class IdentifyCommandCommCommand extends CommCommand {
     @Override
     public void execute() {
         try {
-            JSONObject json = new JSONObject(this.read());
-//            System.out.println(json.toString());
+            String read = this.read();
+            System.out.println(read);
+            JSONObject json = new JSONObject(read);
             switch (CommandStatementValue.values()[json.getInt(CommandStatementName.CMM_TYPE.getName())]) {
                 case LOGIN:
                     new LoginCommCommand(socket, json).execute();
@@ -44,6 +45,8 @@ public class IdentifyCommandCommCommand extends CommCommand {
                     send("");
                     break;
             }
+        } catch (Exception ex) {
+            System.out.println(ex);
         } finally {
             close();
         }

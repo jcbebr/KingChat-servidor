@@ -19,6 +19,7 @@ public class DataBaseController {
 
     private static DataBaseController instance;
     private Connection conn;
+    private final int interval = Defs.getInstance().getRf_interval();
 
     public static DataBaseController getInstance() {
         if (instance == null) {
@@ -56,7 +57,7 @@ public class DataBaseController {
                         + "    oldEmail VARCHAR(100)            ,\n"
                         + "    pass     VARCHAR(30)             ,\n"
                         + "    birth    INTEGER                 ,\n"
-                        + "    online   BOOLEAN                 ,\n"
+                        + "    last_log TEXT                    ,\n"
                         + "    path     VARCHAR(100)            ,\n"
                         + "    port     INTEGER                  \n);";
                 Statement stmt = conn.createStatement();
@@ -69,11 +70,17 @@ public class DataBaseController {
                 stmt = conn.createStatement();
                 stmt.execute(sql);
 
-                this.insertClient(new Client("jose", "jose", "jose", "jose", 1999, false, "", 0));
-                this.insertClient(new Client("luis", "luis", "luis", "luis", 2001, false, "", 0));
-                this.insertClient(new Client("joao", "joao", "joao", "joao", 2000, false, "", 0));
-                this.insertClient(new Client("sony", "sony", "sony", "sony", 2003, false, "", 0));
-                this.insertClient(new Client("play", "play", "play", "play", 2002, false, "", 0));
+                sql = "SELECT 1 FROM CLIENT";
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                
+                if (!rs.next()) {
+                    this.insertClient(new Client("jose", "jose", "jose", "jose", 1999, true, "", 0));
+                    this.insertClient(new Client("luis", "luis", "luis", "luis", 2001, true, "", 0));
+                    this.insertClient(new Client("joao", "joao", "joao", "joao", 2000, true, "", 0));
+                    this.insertClient(new Client("sony", "sony", "sony", "sony", 2003, true, "", 0));
+                    this.insertClient(new Client("play", "play", "play", "play", 2002, true, "", 0));
+                }
 
                 System.out.println("Data-base initialized");
             }
@@ -85,11 +92,11 @@ public class DataBaseController {
     }
 
     public boolean insertClient(Client client) {
-        if (client.getNick()== null || client.getPass()== null) {
+        if (client.getNick() == null || client.getPass() == null) {
             return false;
         }
-        
-        String sql = "INSERT INTO CLIENT(nick,email,pass,birth,online,path,port) VALUES(?,?,?,?,?,?,?)";
+
+        String sql = "INSERT INTO CLIENT(nick,email,pass,birth,last_log,path,port) VALUES(?,?,?,?,datetime('now'),?,?)";
 
         try {
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -97,9 +104,27 @@ public class DataBaseController {
             pstmt.setString(2, client.getEmail());
             pstmt.setString(3, client.getPass());
             pstmt.setInt(4, client.getBirth());
-            pstmt.setBoolean(5, false);
-            pstmt.setString(6, client.getPath());
-            pstmt.setInt(7, client.getPort());
+            pstmt.setString(5, client.getPath());
+            pstmt.setInt(6, client.getPort());
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean keepAlive(Client client) {
+        if (client.getId() == null) {
+            return false;
+        }
+
+        String sql = "UPDATE CLIENT "
+                + "      SET last_log  = datetime('now')"
+                + "    WHERE id        = " + client.getId();
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -119,7 +144,7 @@ public class DataBaseController {
                 + "          oldEmail  = ?,"
                 + "          pass      = ?,"
                 + "          birth     = ?,"
-                + "          online    = ?,"
+                + "          last_log  = datetime('now'),"
                 + "          path      = ?,"
                 + "          port      = ? "
                 + "    WHERE id        = " + client.getId();
@@ -131,9 +156,8 @@ public class DataBaseController {
             pstmt.setString(3, client.getEmail());
             pstmt.setString(4, client.getPass());
             pstmt.setInt(5, client.getBirth());
-            pstmt.setBoolean(6, client.isOnline());
-            pstmt.setString(7, client.getPath());
-            pstmt.setInt(8, client.getPort());
+            pstmt.setString(6, client.getPath());
+            pstmt.setInt(7, client.getPort());
             pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -143,7 +167,7 @@ public class DataBaseController {
     }
 
     public Client searchClient(Client client) {
-        String sql = "SELECT * "
+        String sql = "SELECT *, datetime(last_log, '+"+interval+" seconds') > datetime('now') as online "
                 + "     FROM CLIENT "
                 + "    WHERE nick = '" + client.getNick() + "'"
                 + "      AND pass = '" + client.getPass() + "'";
@@ -166,7 +190,7 @@ public class DataBaseController {
         if (client01.getId() == null || client02.getId() == null) {
             return false;
         }
-        
+
         String sql = "INSERT INTO ClientRel(client1,client2) VALUES(?,?)";
 
         try {
@@ -189,7 +213,7 @@ public class DataBaseController {
         if (client01.getId() == null || client02.getId() == null) {
             return false;
         }
-        
+
         String sql = "DELETE FROM ClientRel WHERE client1 = ? AND client2 = ?";
 
         try {
@@ -212,9 +236,9 @@ public class DataBaseController {
         if (client.getId() == null) {
             return null;
         }
-        
+
         ArrayList clients = new ArrayList();
-        String sql = "SELECT * "
+        String sql = "SELECT *, datetime(last_log, '+"+interval+" seconds') > datetime('now') as online "
                 + "     FROM CLIENT "
                 + "    WHERE ID <> " + client.getId()
                 + "      AND EXISTS (SELECT 1 "
@@ -240,9 +264,9 @@ public class DataBaseController {
         if (client.getId() == null) {
             return null;
         }
-        
+
         ArrayList clients = new ArrayList();
-        String sql = "SELECT * "
+        String sql = "SELECT *, datetime(last_log, '+"+interval+" seconds') > datetime('now') as online "
                 + "     FROM CLIENT "
                 + "    WHERE ID <> " + client.getId()
                 + "      AND NOT EXISTS (SELECT 1 "
@@ -273,6 +297,7 @@ public class DataBaseController {
         c.setPass(rs.getString("pass"));
         c.setBirth(rs.getInt("birth"));
         c.setOnline(rs.getBoolean("online"));
+        c.setLast_log(rs.getString("last_log"));
         c.setPath(rs.getString("path"));
         c.setPort(rs.getInt("port"));
         return c;
@@ -280,7 +305,7 @@ public class DataBaseController {
 
     public void printAllClients() {
         try {
-            String sql = "SELECT * FROM CLIENT ";
+            String sql = "SELECT *, datetime(last_log, '+"+interval+" seconds') > datetime('now') as online FROM CLIENT ";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {

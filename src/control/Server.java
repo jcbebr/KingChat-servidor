@@ -26,7 +26,7 @@ public class Server extends Thread {
     @Override
     public void run() {
         try {
-            this.server = new ServerSocket(Defs.getInstance().getPort());
+            this.server = new ServerSocket(Defs.getInstance().getServer_port());
             server.setReuseAddress(true);
             while (alive) {
                 System.out.println("Aguardando conexao de cliente...");
