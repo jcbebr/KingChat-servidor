@@ -19,7 +19,7 @@ public class ChangeDataCommCommand extends CommCommand {
 
     @Override
     public void execute() {
-        Client client = getClientFromJSON(json);
+        Client client = getClientFromJSON(json, socket);
 
         boolean updateClient = DataBaseController.getInstance().updateClient(client);
 

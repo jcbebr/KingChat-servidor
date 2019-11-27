@@ -106,6 +106,36 @@ public abstract class CommCommand {
         }
         return client;
     }
+    
+    public static Client getClientFromJSON(JSONObject json, Socket socket) {
+        Client client = new Client();
+        if (json.has(CommandStatementName.CMM_ID.getName())) {
+            client.setId(json.getInt(CommandStatementName.CMM_ID.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_NICK.getName())) {
+            client.setNick(json.getString(CommandStatementName.CMM_NICK.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_PASS.getName())) {
+            client.setPass(json.getString(CommandStatementName.CMM_PASS.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_BIRTH.getName())) {
+            client.setBirth(json.getInt(CommandStatementName.CMM_BIRTH.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_EMAIL.getName())) {
+            client.setEmail(json.getString(CommandStatementName.CMM_EMAIL.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_ONLINE.getName())) {
+            client.setOnline(json.getBoolean(CommandStatementName.CMM_ONLINE.getName()));
+        }
+        if (json.has(CommandStatementName.CMM_PATH.getName())) {
+            client.setPath(socket.getInetAddress().getHostAddress());
+            System.out.println(client.getPath());
+        }
+        if (json.has(CommandStatementName.CMM_PORT.getName())) {
+            client.setPort(json.getInt(CommandStatementName.CMM_PORT.getName()));
+        }
+        return client;
+    }
 
     public static Client getRandomClient() {
         int nc = new Random().nextInt(9999);
